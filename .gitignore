@@ -1,0 +1,7 @@
+# internal working notes (not for the client)
+CLAUDE.md
+# local tooling
+.claude/
+*.log
+Thumbs.db
+.DS_Store

@@ -1,0 +1,1010 @@
+/* ==========================================================================
+   Karma of Fuquay — homepage updates (2026-11)
+   1. Hero: Eximius 1 slide plays the Karma hero film instead of a still.
+   2. Current Models: tabbed block replaced by alternating image / text rows,
+      set in Karma's model-presentation language (black field, large name,
+      single studio frame) using this theme's own type, colours and button.
+   Loaded after style.css; touches nothing outside these two blocks.
+   ========================================================================== */
+
+/* ---------- 0. Motion scale (the only source of durations/easing here) ---------- */
+
+:root {
+  --fq-hdr-h: 131px;                                 /* fixed site header; set live by fuquay-updates.js */
+  --fq-dur-1: 0.25s;
+  --fq-dur-2: 0.6s;
+  --fq-dur-3: 0.9s;
+  --fq-dur-4: 1.2s;
+  --fq-ease-out: cubic-bezier(0.22, 1, 0.36, 1);     /* entering */
+  --fq-ease-in: cubic-bezier(0.55, 0, 1, 0.45);      /* exiting */
+  --fq-ease-wipe: cubic-bezier(0.7, 0, 0.2, 1);      /* shutter: gathers, then settles into place */
+}
+
+@media (max-width: 1024.98px) {
+  :root { --fq-hdr-h: 88px; }
+}
+
+/* ---------- 1a. Hero slider — one size for every slide ---------- */
+
+.slider,
+.slider .home-slider .owl-stage-outer {
+  background-color: #000;
+}
+
+/* every slide the same height: no stage jump, no white gap under shorter slides */
+.slider .home-slider .item {
+  position: relative;
+  height: clamp(560px, 100svh, 1120px);
+  min-height: 0;
+  align-items: flex-end;
+  /* content sits on one baseline, clear of the fixed header */
+  padding-top: var(--fq-hdr-h);
+  padding-bottom: clamp(56px, 11svh, 128px);
+  background-size: cover;
+  background-position: center;
+}
+
+/* one shared bottom shade so the baseline copy reads on every photograph */
+.slider .home-slider .item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.18) 38%, rgba(0, 0, 0, 0) 60%);
+}
+
+.slider .home-slider .item .container-new {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 767.98px) {
+  .slider .home-slider .item {
+    height: clamp(520px, 100svh, 900px);
+    padding-bottom: clamp(40px, 8svh, 72px);
+  }
+}
+
+/* ---------- 1b. Hero slide change — right-to-left shutter ---------- */
+
+.slider .home-slider .owl-item.owl-animated-in {
+  z-index: 2;
+}
+
+.slider .home-slider .owl-item.owl-animated-out {
+  z-index: 1;
+}
+
+.slider .home-slider .owl-item.animated.heroIn {
+  animation: fqHeroIn var(--fq-dur-4) var(--fq-ease-wipe) both;
+}
+
+.slider .home-slider .owl-item.animated.heroOut {
+  animation: fqHeroOut var(--fq-dur-4) var(--fq-ease-in) both;
+}
+
+@keyframes fqHeroIn {
+  from { clip-path: inset(0 0 0 100%); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fqHeroOut {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-8%); }
+}
+
+/* ---------- 1c. Line reveal (hero copy + model copy) ----------
+   .fq-motion is added by script only when motion is allowed, so without JS
+   or with reduced motion every line is simply visible. */
+
+/* margins and descender room are set per line by the script */
+.rv-mask {
+  overflow: hidden;
+}
+
+.fq-motion .slider .owl-item .rv-mask > * {
+  transform: translateY(115%);
+}
+
+.fq-motion .slider .owl-item.active .rv-mask > * {
+  animation: fqLineUp var(--fq-dur-3) var(--fq-ease-out) both;
+  /* --rv-base: short on first load; set later by script on a slide change, so the copy
+     rises only after the shutter has crossed the text column */
+  animation-delay: calc(var(--rv-base, var(--fq-dur-1)) + var(--rv-i, 0) * 90ms);
+}
+
+/* the outgoing slide keeps its copy while the shutter covers it */
+.fq-motion .slider .owl-item.owl-animated-out .rv-mask > * {
+  transform: none;
+}
+
+@keyframes fqLineUp {
+  from { transform: translateY(115%); }
+  to   { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slider .home-slider .owl-item.animated.heroIn,
+  .slider .home-slider .owl-item.animated.heroOut {
+    animation-duration: 0.01ms;
+  }
+}
+
+/* ---------- 1. Hero video slide ---------- */
+
+.slider .home-slider .item.hero-slide--video {
+  position: relative;
+  overflow: hidden;
+  /* first frame of the film: shown before playback, and as the still for reduced motion */
+  background-image: url("../../../../uploads/EximiusHeroLandscape-poster.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-slide--video .hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* the film is bright (sky, pale asphalt): hold the reading zone on the left
+   and the slider index on the right, keep the car in the middle untouched */
+.hero-slide--video::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.32) 40%,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0) 64%,
+    rgba(0, 0, 0, 0.3) 84%,
+    rgba(0, 0, 0, 0.38) 100%);
+}
+
+.hero-slide--video .container-new {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 767.98px) {
+  .slider .home-slider .item.hero-slide--video {
+    background-image: url("../../../../uploads/EximiusHeroPortrait-poster.jpg");
+  }
+  .hero-slide--video::before {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.38) 55%, rgba(0, 0, 0, 0.12) 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide--video .hero-video {
+    display: none;
+  }
+}
+
+/* ---------- 2. Current Models — alternating rows ---------- */
+
+.models-section {
+  background-color: #000;
+  color: #fff;
+  padding: clamp(72px, 8vw, 136px) 0;
+}
+
+.models-section .models-section__heading {
+  margin-bottom: clamp(48px, 5.5vw, 88px);
+}
+
+.models-section .models-section__heading h2 {
+  color: #fff;
+}
+
+.model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  column-gap: clamp(40px, 5vw, 96px);
+  align-items: start;
+}
+
+.model-row + .model-row {
+  margin-top: clamp(72px, 8vw, 128px);
+}
+
+/* every second model mirrors: text left, image right */
+.model-row:nth-of-type(even) {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+
+.model-row:nth-of-type(even) .model-row__media {
+  order: 2;
+}
+
+.model-row__media {
+  aspect-ratio: 1060 / 580;
+  overflow: hidden;
+  background-color: #242424;
+}
+
+.model-row__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 3:2 sources cropped into the shared frame — keep the whole car */
+.model-row--invictus .model-row__media img {
+  object-position: center 60%;
+}
+
+.model-row--kaveya .model-row__media img {
+  object-position: center 62%;
+}
+
+.model-row__text {
+  padding-top: 4px;
+}
+
+.model-row__name {
+  font-family: "Nexa";
+  font-weight: 300;
+  font-size: clamp(30px, 2.8vw, 40px);
+  line-height: 1.1;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 18px;
+}
+
+.model-row__tagline {
+  font-family: "Nexa";
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 28px;
+}
+
+.model-row__copy {
+  font-family: "Nexa";
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 30px;
+  color: #d9d9d9;
+  max-width: 46ch;
+  margin: 0 0 36px;
+}
+
+.models-section .border-btn {
+  color: #fff;
+  min-width: 200px;
+}
+
+.models-section .border-btn:hover {
+  color: #fff;
+}
+
+.models-section .border-btn:focus-visible {
+  outline: 1px solid #fff !important;
+  outline-offset: 4px;
+}
+
+@media (max-width: 820.98px) {
+  .model-row,
+  .model-row:nth-of-type(even) {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 28px;
+  }
+
+  /* on one column the image always leads */
+  .model-row:nth-of-type(even) .model-row__media {
+    order: 0;
+  }
+
+  .model-row + .model-row {
+    margin-top: 72px;
+  }
+
+  .model-row__text {
+    padding-top: 0;
+  }
+
+  .model-row__copy {
+    max-width: 60ch;
+  }
+}
+
+@media (max-width: 450.98px) {
+  .model-row__name {
+    letter-spacing: 4px;
+  }
+
+  .model-row__tagline {
+    font-size: 14px;
+    letter-spacing: 3px;
+  }
+
+  .models-section .border-btn {
+    width: 100%;
+  }
+}
+
+/* ---------- 3. Service Department — legibility ----------
+   The dashboard photo and the car (::before) both sat bright behind white copy, and the car
+   painted over the text. One shade now covers photo + car; the copy sits above both. */
+
+.service-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.62) 55%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+.service-section .container-new {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- 4. Footer map — no empty band under the map ----------
+   style.css sizes the box by viewport height (min-height: 70vh) but the map by width
+   (background-size: 100%), so on taller windows the box outgrows the picture and leaves
+   white space under it. The box now takes the map's own proportions; the map fills it. */
+
+footer .footer-map-section {
+  min-height: 0;
+  aspect-ratio: 2728 / 1150;
+  background-size: cover;
+  background-position: center;
+  background-color: #242424;
+}
+
+@media (max-width: 1024.98px) {
+  footer .footer-map-section {
+    aspect-ratio: auto;
+    min-height: 260px;
+  }
+}
+
+/* ---------- 5. Footer stripe — behind the car only ----------
+   The diagonal #313131 band (100vh tall) ran on through the copyright lines, putting
+   #242424 text on #313131. Same band, same angle and width, now confined to the car block. */
+
+.footer-copyright::before {
+  display: none;
+}
+
+.footer-copyright .fc-car {
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-copyright .fc-car::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -50%;
+  height: 200%;
+  width: 220px;
+  margin: 0 auto;
+  background-color: #000; /* solid; the fade to nothing at the top is done by .fc-car::after */
+  transform: rotate(22deg);
+  pointer-events: none;
+}
+
+.footer-copyright .fc-car img {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 450.98px) {
+  .footer-copyright .fc-car::before {
+    width: 160px;
+  }
+}
+
+/* ---------- 6. Footer map — live, monochrome ----------
+   Leaflet + OpenStreetMap. Only the tile layer is desaturated and inverted, so the
+   dealer's red pin keeps its colour. Without JS the static map + pin link remain. */
+
+footer .footer-map-section.is-live {
+  background-image: none;
+}
+
+.fq-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: #242424;
+}
+
+.footer-map-section:not(.is-live) .fq-map {
+  display: none;
+}
+
+.footer-map-section.is-live .footer-pin-btn {
+  display: none;
+}
+
+.fq-map .leaflet-tile-pane {
+  filter: grayscale(1) invert(1) brightness(0.82) contrast(0.92);
+}
+
+.fq-map.leaflet-container {
+  font-family: "Nexa", sans-serif;
+  background-color: #242424;
+}
+
+.fq-map .fq-pin {
+  transition: transform var(--fq-dur-2) var(--fq-ease-out);
+  transform-origin: 50% 100%;
+}
+
+.fq-map .fq-pin:hover,
+.fq-map .fq-pin:focus-visible {
+  transform: scale(1.25);
+}
+
+.fq-map .fq-pin:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 4px;
+}
+
+.fq-map .leaflet-bar {
+  border: 1px solid #656565;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.fq-map .leaflet-bar a {
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  background-color: #242424;
+  color: #fff;
+  border-bottom-color: #656565;
+  border-radius: 0 !important;
+}
+
+.fq-map .leaflet-bar a:hover,
+.fq-map .leaflet-bar a:focus-visible {
+  background-color: #656565;
+  color: #fff;
+}
+
+.fq-map .leaflet-control-attribution {
+  background: rgba(36, 36, 36, 0.8);
+  color: #d9d9d9;
+  font-size: 11px;
+}
+
+.fq-map .leaflet-control-attribution a {
+  color: #fff;
+}
+
+/* ---------- 7. Hero model rail (replaces the faint right-hand list) ----------
+   A row of real buttons across the foot of the hero: a track line per model whose
+   red fill runs for exactly as long as the slide is shown, the name under it, and a
+   pause control. Same rail on touch, scrollable sideways. */
+
+:root {
+  --fq-rail-h: 84px;
+}
+
+.slider .slider-nav.hero-rail {
+  position: absolute;
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  display: block;
+  padding-bottom: clamp(16px, 3svh, 32px);
+}
+
+.hero-rail .hero-rail__inner {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(16px, 2.4vw, 40px);
+}
+
+.slider .slider-nav.hero-rail #carousel-custom-dots {
+  position: static;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: clamp(12px, 2vw, 32px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.slider .slider-nav.hero-rail #carousel-custom-dots li.owl-dot {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  opacity: 1;
+  text-align: left;
+}
+
+.hero-rail__btn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 0 4px;
+  margin: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.88); /* ≥4.5:1 on the brightest slide (Invictus) */
+  font-family: "Nexa", sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color var(--fq-dur-1) var(--fq-ease-out);
+}
+
+.hero-rail__track {
+  position: relative;
+  display: block;
+  height: 2px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.32);
+  transition: background-color var(--fq-dur-1) var(--fq-ease-out);
+}
+
+.hero-rail__fill {
+  position: absolute;
+  inset: 0;
+  background-color: #d90e0e;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.hero-rail__name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-rail__btn:hover,
+.hero-rail__btn:focus-visible {
+  color: #fff;
+}
+
+.hero-rail__btn:hover .hero-rail__track,
+.hero-rail__btn:focus-visible .hero-rail__track {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.hero-rail__btn:focus-visible,
+.hero-rail__pause:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 4px;
+}
+
+/* current model */
+.hero-rail li.active .hero-rail__btn {
+  color: #fff;
+}
+
+.hero-rail li.active .hero-rail__fill {
+  transform: scaleX(1); /* paused / reduced motion: the whole line marks the current model */
+}
+
+.hero-rail li.active.is-running .hero-rail__fill {
+  animation: fqRailFill var(--fq-slide-dur, 5s) linear both;
+}
+
+@keyframes fqRailFill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* pause / play */
+.hero-rail__pause {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 0;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color var(--fq-dur-1) var(--fq-ease-out), border-color var(--fq-dur-1) var(--fq-ease-out);
+}
+
+.hero-rail__pause:hover {
+  background-color: #656565;
+  border-color: #656565;
+}
+
+.hero-rail__icon {
+  width: 14px;
+  height: 14px;
+}
+
+.hero-rail__icon--play,
+.hero-rail__pause[aria-pressed="true"] .hero-rail__icon--pause {
+  display: none;
+}
+
+.hero-rail__pause[aria-pressed="true"] .hero-rail__icon--play {
+  display: block;
+}
+
+
+/* the rail sits on the darkest band of the shared shade */
+.slider .home-slider .item::after {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.34) 20%, rgba(0, 0, 0, 0.12) 44%, rgba(0, 0, 0, 0) 62%);
+}
+
+/* phone: the rail runs along the foot of the hero, scrolls sideways, fades at the edge */
+@media (max-width: 767.98px) {
+  .slider .slider-nav.hero-rail #carousel-custom-dots {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline-start: 16%; /* snap lands items past the left-edge fade, never inside it */
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent);
+    mask-image: linear-gradient(90deg, #000 82%, transparent);
+    padding-right: 40px;
+  }
+
+  .slider .slider-nav.hero-rail #carousel-custom-dots::-webkit-scrollbar {
+    display: none;
+  }
+
+  .slider .slider-nav.hero-rail #carousel-custom-dots li.owl-dot {
+    flex: 0 0 auto;
+    width: 112px;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 767.98px) {
+  :root { --fq-rail-h: 76px; }
+  .slider .home-slider .item {
+    padding-bottom: calc(var(--fq-rail-h) + clamp(24px, 4svh, 40px));
+  }
+}
+
+@media (max-width: 767.98px) {
+  /* once scrolled, fade both edges: there are models on either side */
+  .slider .slider-nav.hero-rail #carousel-custom-dots.is-scrolled {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 82%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 82%, transparent);
+  }
+}
+
+/* Revero incentive line (dealer's own red #e63c13, set inline in the slide copy):
+   3.7:1 on the dark slide — sized up to large-text (≥18.66px bold) where 3:1 is the bar.
+   Colour kept: it is the dealer's offer colour. */
+.slider .home-slider .banner-content span[style*="e63c13"] {
+  font-size: 20px;
+  line-height: 1.35;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- 7b. Rail on the side (≥768px) — the dealer's original position ----------
+   A right-aligned column of model names on one continuous vertical line (their
+   border-right), each model owning a segment that fills red top→bottom while shown.
+   Pause sits under the column. */
+
+@media (min-width: 768px) {
+  :root { --fq-container: 1210px; }
+
+  .slider .slider-nav.hero-rail {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: max(24px, calc((100% - var(--fq-container)) / 2));
+    display: flex;
+    align-items: center;
+    padding: var(--fq-hdr-h) 0 0;
+  }
+
+  .hero-rail .hero-rail__inner {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 20px;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .slider .slider-nav.hero-rail #carousel-custom-dots {
+    flex-direction: column;
+    flex: 0 0 auto;
+    gap: 0;
+  }
+
+  .slider .slider-nav.hero-rail #carousel-custom-dots li.owl-dot {
+    flex: 0 0 auto;
+    text-align: right;
+  }
+
+  .hero-rail__btn {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 18px;
+    padding: 0;
+    min-height: 44px;
+    font-size: 14px;
+    text-align: right;
+  }
+
+  .hero-rail__name {
+    order: 0;
+    align-self: center;
+  }
+
+  /* segments stack into one unbroken vertical line */
+  .hero-rail__track {
+    order: 1;
+    flex: 0 0 2px;
+    width: 2px;
+    height: auto;
+    margin: 0;
+  }
+
+  .hero-rail__fill {
+    transform: scaleY(0);
+    transform-origin: center top;
+  }
+
+  .hero-rail li.active .hero-rail__fill {
+    transform: scaleY(1);
+  }
+
+  .hero-rail li.active.is-running .hero-rail__fill {
+    animation-name: fqRailFillY;
+  }
+
+  .hero-rail__pause {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* copy keeps its bottom baseline; the column needs a quiet right edge on every photo */
+  .slider .home-slider .item::after {
+    background:
+      linear-gradient(270deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 16%, rgba(0, 0, 0, 0) 34%),
+      linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.22) 26%, rgba(0, 0, 0, 0) 55%);
+  }
+}
+
+@media (min-width: 1441px) {
+  :root { --fq-container: 1390px; }
+}
+
+@media (min-width: 768px) and (max-width: 1024.98px) {
+  :root { --fq-container: 930px; }
+}
+
+@keyframes fqRailFillY {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* ---------- 8. Footer — rebuilt under the car ----------
+   The car's dark stripe now runs straight down into a black footer (Karma's own footer
+   language): brand + address, three link columns from the header menu, hours, legal line.
+   Tokens: #000 field, #313131 hairlines (the stripe colour), #d9d9d9 links, #fff titles. */
+
+.footer-copyright.py-5 {
+  padding-bottom: 0 !important;
+}
+
+.footer-copyright .fc-car.mb-5 {
+  margin-bottom: 0 !important;
+}
+
+.fq-footer {
+  background-color: #000;
+  color: #9a9a9a;
+  padding: clamp(48px, 5vw, 72px) 0 clamp(28px, 3vw, 40px);
+  font-family: "Nexa", sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.fq-footer p {
+  margin: 0;
+}
+
+.fq-footer a {
+  color: #d9d9d9;
+  text-decoration: none;
+  transition: color var(--fq-dur-1) var(--fq-ease-out);
+}
+
+.fq-footer a:hover,
+.fq-footer a:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+
+.fq-footer a:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 3px;
+}
+
+.fq-footer__top,
+.fq-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 40px;
+}
+
+.fq-footer__logo img {
+  display: block;
+  width: 160px;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
+.fq-footer__links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.fq-footer__links span {
+  color: #656565;
+}
+
+.fq-footer__legal {
+  margin-top: clamp(32px, 3.5vw, 48px);
+  padding-top: 24px;
+  border-top: 1px solid #313131;
+}
+
+@media (max-width: 767.98px) {
+  .fq-footer__top,
+  .fq-footer__legal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ---------- 7c. Active model marked in red ----------
+   Red text was tried twice and measured: on a black tag (reads as a patch) and with a dark
+   halo (2.4:1 over the silver bodywork — illegible). So, as in the dealer's original rail,
+   the name of the current model is the brightest, heaviest white, and red carries the
+   marker: a red tick before the name (their red "›") and the red segment filling the line. */
+
+.hero-rail__fill {
+  background-color: #ff1d00;
+}
+
+.hero-rail li.active .hero-rail__btn,
+.hero-rail li.active .hero-rail__btn:hover,
+.hero-rail li.active .hero-rail__btn:focus-visible {
+  color: #fff;
+}
+
+.hero-rail li.active .hero-rail__name {
+  font-weight: 400;
+}
+
+.hero-rail__name {
+  position: relative;
+}
+
+.hero-rail li.active .hero-rail__name::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 10px);
+  width: 14px;
+  height: 2px;
+  margin-top: -1px;
+  background-color: #ff1d00;
+}
+
+/* focus ring around the word only, never the whole cell + line */
+.hero-rail__btn:focus-visible {
+  outline: none;
+}
+
+.hero-rail__btn:focus-visible .hero-rail__name {
+  outline: 1px solid #fff;
+  outline-offset: 5px;
+}
+
+@media (min-width: 768px) {
+  /* a deeper shade at the right edge: white names ≥4.5:1 over the brightest bodywork */
+  .slider .home-slider .item::after {
+    background:
+      linear-gradient(270deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.6) 14%, rgba(0, 0, 0, 0.3) 26%, rgba(0, 0, 0, 0) 42%),
+      linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.22) 26%, rgba(0, 0, 0, 0) 55%);
+  }
+
+}
+
+
+
+/* the halo must not be clipped into a box: names are short, no ellipsis needed */
+.hero-rail__name {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* the stripe fades to nothing at the top edge of the car block, measured in the block's own
+   (unrotated) coordinates, and is full black where it meets the footer */
+.footer-copyright .fc-car::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    #fff 0%,
+    rgba(255, 255, 255, 0.99) 10%,
+    rgba(255, 255, 255, 0.95) 20%,
+    rgba(255, 255, 255, 0.86) 30%,
+    rgba(255, 255, 255, 0.72) 40%,
+    rgba(255, 255, 255, 0.54) 50%,
+    rgba(255, 255, 255, 0.35) 60%,
+    rgba(255, 255, 255, 0.18) 70%,
+    rgba(255, 255, 255, 0.06) 80%,
+    rgba(255, 255, 255, 0) 88%);
+}
+
+/* ---------- 9. Hero photography from karmaautomotive.com (each from its own model page) ----------
+   Set here, not inline, so each frame gets an intended focal point per breakpoint
+   and Kaveya can use Karma's own portrait cut on phones. */
+
+.slider .home-slider .item.hero-slide--revero   { background-image: url("../../../../uploads/hero/karma-revero-hero.jpg");   background-position: 58% 50%; }
+.slider .home-slider .item.hero-slide--invictus { background-image: url("../../../../uploads/hero/karma-invictus-hero.jpg"); background-position: 70% 45%; }
+.slider .home-slider .item.hero-slide--kaveya   { background-image: url("../../../../uploads/hero/karma-kaveya-hero.jpg");   background-position: 50% 60%; }
+.slider .home-slider .item.hero-slide--gyesera  { background-image: url("../../../../uploads/hero/karma-gyesera-hero.jpg");  background-position: 50% 62%; }
+.slider .home-slider .item.hero-slide--ivara    { background-image: url("../../../../uploads/hero/karma-ivara-hero.jpg");    background-position: 50% 58%; }
+.slider .home-slider .item.hero-slide--amaris   { background-image: url("../../../../uploads/hero/karma-amaris-hero.jpg");   background-position: 45% 60%; }
+
+@media (max-width: 767.98px) {
+  .slider .home-slider .item.hero-slide--revero   { background-position: 60% 50%; }
+  .slider .home-slider .item.hero-slide--invictus { background-position: 76% 40%; }
+  .slider .home-slider .item.hero-slide--kaveya   { background-image: url("../../../../uploads/hero/karma-kaveya-hero-portrait.jpg"); background-position: 50% 40%; }
+  .slider .home-slider .item.hero-slide--gyesera  { background-position: 42% 60%; }
+  .slider .home-slider .item.hero-slide--ivara    { background-position: 38% 58%; }
+  .slider .home-slider .item.hero-slide--amaris   { background-position: 86% 55%; }
+}
+
+
+

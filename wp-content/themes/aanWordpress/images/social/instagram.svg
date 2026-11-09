@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+  <g id="Group_38548" data-name="Group 38548" transform="translate(-9169 -3938)">
+    <g id="Rectangle_14306" data-name="Rectangle 14306" transform="translate(9169 3938)" fill="none" stroke="#c6c6c6" stroke-width="0.5">
+      <rect width="30" height="30" rx="4" stroke="none"/>
+      <rect x="0.25" y="0.25" width="29.5" height="29.5" rx="3.75" fill="none"/>
+    </g>
+    <g id="Group_18" data-name="Group 18" transform="translate(9174.547 3943.547)">
+      <path id="XMLID_17_" d="M13.274,0H5.632A5.639,5.639,0,0,0,0,5.632v7.642a5.639,5.639,0,0,0,5.632,5.632h7.642a5.639,5.639,0,0,0,5.632-5.632V5.632A5.639,5.639,0,0,0,13.274,0ZM17,13.274A3.73,3.73,0,0,1,13.274,17H5.632a3.73,3.73,0,0,1-3.73-3.73V5.632A3.73,3.73,0,0,1,5.632,1.9h7.642A3.73,3.73,0,0,1,17,5.632v7.642Z" transform="translate(0 0)" fill="#6e6e6e"/>
+      <path id="XMLID_81_" d="M137.89,133a4.89,4.89,0,1,0,4.89,4.89A4.9,4.9,0,0,0,137.89,133Zm0,7.878a2.988,2.988,0,1,1,2.988-2.988A2.988,2.988,0,0,1,137.89,140.878Z" transform="translate(-128.437 -128.437)" fill="#6e6e6e"/>
+      <ellipse id="XMLID_83_" cx="1.172" cy="1.172" rx="1.172" ry="1.172" transform="translate(13.181 3.428)" fill="#6e6e6e"/>
+    </g>
+  </g>
+</svg>
