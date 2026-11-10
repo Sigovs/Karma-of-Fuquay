@@ -1008,3 +1008,59 @@ footer .footer-map-section.is-live {
 
 
 
+
+/* ---------- 10. Beauty Through Balance — CTA + award ----------
+   The award was a navy banner (cargurus2026.png) pushed to the far edge by space-between,
+   and a full-width blue block on phones. Now: CarGurus' own transparent laurel mark, sized
+   as a credential, set right after the button behind a hairline — action + proof, one row. */
+
+.beauty-section .beauty-content p {
+  max-width: 58ch;
+}
+
+.beauty-section .beauty-content .beauty-content-cta {
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 0;
+}
+
+.beauty-section .beauty-content .beauty-content-cta .border-btn {
+  min-width: 220px;
+}
+
+.beauty-section .beauty-content .beauty-content-cta .beauty-award {
+  width: auto;
+  height: 64px;
+  margin: 0 0 0 32px;
+  padding-left: 32px;
+  border-left: 1px solid #d9d9d9;
+  box-sizing: content-box;
+}
+
+@media (max-width: 820.98px) {
+  .beauty-section .beauty-content .beauty-content-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .beauty-section .beauty-content .beauty-content-cta .border-btn {
+    width: 100%;
+  }
+  .beauty-section .beauty-content .beauty-content-cta .beauty-award {
+    width: auto;
+    height: 56px;
+    margin: 28px 0 0;
+    padding: 0;
+    border: 0;
+  }
+}
+
+/* faded Karma GT car behind the copy removed (Alex): the copy sits on clean white */
+.beauty-section {
+  background-image: none;
+}
+
+@media (max-width: 820.98px) {
+  .beauty-section .beauty-content {
+    padding-bottom: 40px; /* air between the award and the video below */
+  }
+}
